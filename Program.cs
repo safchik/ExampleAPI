@@ -18,8 +18,9 @@ if (app.Environment.IsDevelopment())
 }
 
 
-app.MapGet("/api/coupon", () =>
+app.MapGet("/api/coupon", (ILogger<Program> _logger) =>
 {
+    _logger.Log(LogLevel.Information, "Getting all Coupons");
     return Results.Ok(CouponStore.couponList);
 } ).WithName("GetCoupons").Produces<IEnumerable<Coupon>>(200);
 
@@ -42,7 +43,7 @@ app.MapPost("/api/coupon", ([FromBody] Coupon coupon) =>
     coupon.Id= CouponStore.couponList.OrderByDescending(u=>u.Id).FirstOrDefault().Id + 1;
     CouponStore.couponList.Add(coupon);
     return Results.CreatedAtRoute("GetCoupon",new { id=coupon.Id }, coupon);
-    //return Results.Created($"/api/coupon/{coupon.Id}", coupon);
+    
 }).WithName("CreateCoupon").Accepts<Coupon>("application/json").Produces<Coupon>(201).Produces(400);
 
 app.MapPut("/api/coupon", () =>
